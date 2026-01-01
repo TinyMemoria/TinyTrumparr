@@ -6,12 +6,18 @@ ENV RADARR_URL=
 ENV RADARR_API_KEY=
 
 # Update
-RUN apt-get update \
- && apt-get upgrade -y
+RUN apt-get update
 
 # Install cron and jq
-RUN apt-get install -y cron jq \
+RUN apt-get install -y cron jq
+
+# Remove unnecessary packages
+RUN apt-get purge -y exim* \
+ && apt-get autoremove -y \
  && rm -rf /var/lib/apt/lists/*
+
+# Upgrade
+RUN apt-get upgrade -y
 
 # Copy files into container
 COPY cron_trump_search /etc/cron.d/cron_trump_search
@@ -29,6 +35,8 @@ RUN chmod 0550 /usr/local/bin/trump_search.sh \
  && chgrp tinyg /usr/local/bin/trump_search.sh \
  && chmod 0400 /etc/cron.d/cron_trump_search \
  && chmod 0500 /entrypoint.sh
+
+LABEL org.opencontainers.image.description="Container to search for trumped movies, delete them, and search for new copy"
 
 # Start
 CMD ["/entrypoint.sh"]
