@@ -1,0 +1,5 @@
+SHELL=/bin/bash
+PATH=/venv/bin:/usr/sbin:/usr/local/bin:/bin
+HOME=/home/tinyu
+
+*/5 * * * * root . /run/container.env; runuser -u tinyu -- trump_search.sh 2>&1 | tee -a /var/log/cron.log /proc/1/fd/1

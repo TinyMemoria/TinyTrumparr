@@ -1,0 +1,13 @@
+services:
+  tinytrumparr:
+    image: ghcr.io/tinymemoria/tinytrumparr:latest
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
+      - /var/log
+      - /home/tinyu/.config
+    environment:
+      - RTORRENT_RPC=http://RTORRENT_URL_HERE/RPC2
+      - RADARR_URL=http://RADARR_URL_HERE:7878
+      - RADARR_API_KEY=RADARR_API_KEY_HERE
