@@ -1,5 +1,8 @@
 FROM kannibalox/pyrosimple:2.14.2 AS builder
 
+# Fix vulnerabilities in image
+RUN /venv/bin/python -m pip install --upgrade "pip>=25.3" "urllib3>=2.6.0" "requests>=2.32.4" "jinja2>=3.1.6"
+
 FROM python:3.13-slim
 
 # Update
