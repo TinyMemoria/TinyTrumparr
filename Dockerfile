@@ -10,6 +10,9 @@ RUN apt-get update \
 RUN apt-get install -y --no-install-recommends cron curl jq \
  && rm -rf /var/lib/apt/lists/*
 
+COPY --from=builder /venv /venv
+ENV PATH="/venv/bin:${PATH}"
+
 # Copy files into container
 COPY cron_trump_search /etc/cron.d/cron_trump_search
 COPY trump_search.sh /usr/local/bin/trump_search.sh
