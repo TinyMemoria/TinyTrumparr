@@ -1,4 +1,4 @@
-SHELL=/bin/bash
+SHELL=/bin/sh
 PATH=/venv/bin:/usr/sbin:/usr/local/bin:/bin
 HOME=/home/tinyu
 

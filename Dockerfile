@@ -1,23 +1,14 @@
-FROM kannibalox/pyrosimple:2.14.2
+FROM kannibalox/pyrosimple:2.14.2 AS builder
 
-# Set environment variables
-ENV RTORRENT_RPC=
-ENV RADARR_URL=
-ENV RADARR_API_KEY=
+FROM python:3.13-slim
 
 # Update
-RUN apt-get update
+RUN apt-get update \
+ && apt-get upgrade -y
 
 # Install cron and jq
-RUN apt-get install -y cron jq
-
-# Remove unnecessary packages
-RUN apt-get purge -y exim* \
- && apt-get autoremove -y \
+RUN apt-get install -y --no-install-recommends cron curl jq \
  && rm -rf /var/lib/apt/lists/*
-
-# Upgrade
-RUN apt-get upgrade -y
 
 # Copy files into container
 COPY cron_trump_search /etc/cron.d/cron_trump_search
