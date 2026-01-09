@@ -1,5 +1,5 @@
 #!/bin/sh
-set -euo pipefail
+set -u
 
 echo "Starting container at $(date)"
 
@@ -18,13 +18,10 @@ if [ -z "${RADARR_API_KEY:-}" ]; then
   exit 1
 fi
 
-# Export RTORRENT_RPC to a file that cronjob can source
-echo "export RTORRENT_RPC=\"${RTORRENT_RPC}\"" > /run/container.env
-echo "export RADARR_URL=\"${RADARR_URL}\"" >> /run/container.env
-echo "export RADARR_API_KEY=\"${RADARR_API_KEY}\"" >> /run/container.env
-chmod 600 /run/container.env
-
 echo "Welcome to TinyTrumparr!"
-echo "Starting cron daemon"
+echo "Starting search for trumped movies with interval: ${SLEEP} seconds"
 
-exec cron -f
+while true; do
+  sleep $SLEEP
+  /usr/local/bin/trump_search.sh
+done

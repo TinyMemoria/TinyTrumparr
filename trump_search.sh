@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -euo pipefail
+set -u
 
 echo "Starting search at $(date)"
 

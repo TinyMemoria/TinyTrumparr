@@ -1,7 +1,9 @@
 FROM kannibalox/pyrosimple:2.14.2 AS builder
 
 # Fix vulnerabilities in image
-RUN /venv/bin/python -m pip install --upgrade "pip>=25.3" "urllib3>=2.6.0" "requests>=2.32.4" "jinja2>=3.1.6"
+COPY requirements.txt /tmp/requirements.txt
+
+RUN /venv/bin/python -m pip install -U -r /tmp/requirements.txt
 
 FROM python:3.13-slim
 
@@ -9,20 +11,14 @@ FROM python:3.13-slim
 RUN apt-get update \
  && apt-get upgrade -y
 
-# Install cron and jq
-RUN apt-get install -y --no-install-recommends cron curl jq \
+# Install curl and jq
+RUN apt-get install -y --no-install-recommends curl jq \
  && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /venv /venv
-ENV PATH="/venv/bin:${PATH}"
-
 # Copy files into container
-COPY cron_trump_search /etc/cron.d/cron_trump_search
+COPY --from=builder /venv /venv
 COPY trump_search.sh /usr/local/bin/trump_search.sh
 COPY entrypoint.sh /entrypoint.sh
-
-# Create files
-RUN touch /var/log/cron.log
 
 # Create a non-root user and group
 RUN groupadd -r tinyg && useradd -r -g tinyg tinyu
@@ -30,10 +26,20 @@ RUN groupadd -r tinyg && useradd -r -g tinyg tinyu
 # Correct permissions
 RUN chmod 0550 /usr/local/bin/trump_search.sh \
  && chgrp tinyg /usr/local/bin/trump_search.sh \
- && chmod 0400 /etc/cron.d/cron_trump_search \
- && chmod 0500 /entrypoint.sh
+ && chmod 0550 /entrypoint.sh \
+ && chgrp tinyg /entrypoint.sh
 
 LABEL org.opencontainers.image.description="Container to search for trumped movies, delete them, and search for new copy"
+
+# Set environment variables
+ENV PATH="/venv/bin:${PATH}"
+ENV SLEEP=15
+
+# Set user to non-root
+USER tinyu
+
+# Test rtcontrol installation
+RUN /venv/bin/rtcontrol --help >/dev/null
 
 # Start
 CMD ["/entrypoint.sh"]
